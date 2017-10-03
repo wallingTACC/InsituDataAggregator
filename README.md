@@ -1,6 +1,6 @@
 # InsituDataAggregator
 
-Rcripts for processing field data and generating summary reports for In-Situ water well level loggers.
+R scripts for processing field data and generating summary reports for In-Situ water well level loggers.
 
 # clean_insitu_transducer_data.R
 
