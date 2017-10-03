@@ -1,0 +1,56 @@
+---
+title: "Data Summary Report"
+output: html_document
+---
+
+```{r, echo=F, results='hide', message=FALSE, warning=FALSE}
+library(sqldf)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(data.table)
+library(readr)
+```
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+options(knitr.table.format = "html") 
+report_data = read_csv("./data/full_test.csv")
+```
+
+# Data Summary
+
+```{r, eval=T, echo=FALSE}
+sqldf("select count(distinct site) as num_sites, count(*) as total_records from report_data")
+```
+
+# Summary By Site
+
+```{r, echo=FALSE}
+sqldf("select site, 
+date(min(datetime), 'unixepoch', 'localtime') as min_date, 
+date(max(datetime), 'unixepoch', 'localtime') as max_date, 
+count(*) as total_records
+            from report_data
+            group by 1
+            order by 1")
+```
+
+# Graphs
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Drop bad data
+graph_data = as.data.table(report_data)
+graph_data = graph_data[datetime > '2000-01-01']
+
+# Convert to long format
+graph_data.melt = as.data.table(melt(graph_data, id.vars = c("site", "datetime")))
+graph_data.melt = graph_data.melt[variable == "Level Depth To Water (ft)"] # Get variable of interest
+graph_data.melt = graph_data.melt[!is.na(value)] # Drop mising
+
+plot.timeline = ggplot(graph_data.melt, aes(y = as.double(value), x = datetime, color = site)) + geom_line() + labs(y = "Level Depth To Water (ft)", x ="Date", title = "Transducer Data")
+
+plot.timeline
+```
+
+
