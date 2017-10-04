@@ -91,4 +91,4 @@ process_dir <- function(input_dir_path="./data/full_test/",
 
 # Main
 
-process_dir(input_dir_path = "./data/Data/")
+process_dir(input_dir_path = "./data/Data/", output_file="./data/data.csv")
